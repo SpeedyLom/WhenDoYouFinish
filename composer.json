@@ -1,0 +1,31 @@
+{
+  "name": "speedy-lom/when-do-you-finish",
+  "description": "Use Toggl to estimate your workday end based on set hours",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "SpeedyLom",
+      "email": "speedylomuk@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "7.3.*",
+    "vlucas/phpdotenv": "^5.3",
+    "ext-curl": "*",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "SpeedyLom\\WhenDoYouFinish\\": "src/"
+    },
+    "files": [
+      
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "SpeedyLom\\WhenDoYouFinish\\Tests\\": "tests/"
+    }
+  }
+}
