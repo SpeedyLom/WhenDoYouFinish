@@ -1,0 +1,17 @@
+{% extends layout %}
+
+{% block title %}{{ $title }}{% endblock %}
+
+{% block content %}
+<div class="card mb-4 shadow-sm">
+    <div class="card-header"><h4 class="my-0 fw-normal">{{ $formattedDate }}</h4></div>
+    <div class="card-body">
+        <h1 class="card-title"><small class="text-muted">Estimated finish </small>{{ $formattedCurrentFinishingTime}}</h1>
+        <p class="card-text">Time worked: {{ $formattedTimeWorked }}</p>
+        <div class="progress" style="height: 30px;">
+            <div class="progress-bar" role="progressbar" style="width: {{ $percentageWorked }}%;" aria-valuenow="{{ $percentageWorked}}" aria-valuemin="0" aria-valuemax="100">{{ $percentageWorked }}%
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

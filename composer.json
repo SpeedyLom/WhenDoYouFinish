@@ -10,8 +10,7 @@
     }
   ],
   "require": {
-    "php": "7.3.*",
-    "vlucas/phpdotenv": "^5.3",
+    "php": "^8.0",
     "ext-curl": "*",
     "ext-json": "*"
   },
@@ -19,13 +18,19 @@
     "psr-4": {
       "SpeedyLom\\WhenDoYouFinish\\": "src/"
     },
-    "files": [
-      
-    ]
+    "files": []
   },
   "autoload-dev": {
     "psr-4": {
       "SpeedyLom\\WhenDoYouFinish\\Tests\\": "tests/"
     }
+  },
+  "require-dev": {
+    "ext-xdebug": "*",
+    "filp/whoops": "^2.13",
+    "phpunit/phpunit": "^9",
+    "phpstan/phpstan": "^0.12",
+    "infection/infection": "^0.23.0",
+    "nunomaduro/phpinsights": "^2.0"
   }
 }

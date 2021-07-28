@@ -1,3 +1,4 @@
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/SpeedyLom/WhenDoYouFinish)
 # WhenDoYouFinish
 Use PHP and Toggl to allow others to track your workday and put a stop to the question "When do you finish?".
 
