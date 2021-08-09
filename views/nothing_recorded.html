@@ -1,7 +1,7 @@
-{% extends layout %}
+{% extend layout %}
 
-{% block title %}{{ $title }}{% endblock %}
+{% insert title %}{{ $title }}{% end %}
 
-{% block content %}
-    <div class="alert alert-primary" role="alert">Nothing recorded! Are they working today?</div>
-{% endblock %}
+{% insert content %}
+<div class="alert alert-primary" role="alert">Nothing recorded! Are they working today?</div>
+{% end %}

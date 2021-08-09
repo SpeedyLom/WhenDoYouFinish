@@ -25,29 +25,31 @@ final class TrackApi
 
     public function requestCurrentEntry(): void
     {
-        $this->curl->addBasicHttpAuthentication($this->apiToken, 'api_token');
-        $result = $this->curl->makeRequest();
+        $this->curl->addBasicHttpAuthentication(
+            $this->apiToken,
+            'api_token'
+        );
+        $result = $this->curl->makeRequest() ?? '[]';
         $this->curl->close();
 
-        $this->currentEntry = is_string($result) ? json_decode($result, true) : [];
-    }
-
-    public function getCurrentEntryStartTimestamp(): int
-    {
-        if (! isset($this->currentEntry['data']['duration'])) {
-            return -0;
-        }
-
-        return $this->currentEntry['data']['duration'] * -1;
+        $this->currentEntry = json_decode($result, true);
     }
 
     public function getElapsedSecondsForCurrentEntry(int $timestamp): int
     {
-        $currentEntryStartTimestamp = $this->getCurrentEntryStartTimestamp();
-        if ($currentEntryStartTimestamp <= 0) {
+        if ($this->getCurrentEntryStartTimestamp() <= 0) {
             return 0;
         }
 
-        return $timestamp - $currentEntryStartTimestamp;
+        return $timestamp - $this->getCurrentEntryStartTimestamp();
+    }
+
+    public function getCurrentEntryStartTimestamp(): int
+    {
+        if (!isset($this->currentEntry['data']['duration'])) {
+            return -0;
+        }
+
+        return $this->currentEntry['data']['duration'] * -1;
     }
 }

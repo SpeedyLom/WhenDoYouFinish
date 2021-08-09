@@ -42,14 +42,14 @@ $togglTrackApi->requestCurrentEntry();
 
 $secondsWorkedToday += $togglTrackApi->getElapsedSecondsForCurrentEntry(time());
 
-$htmlTemplate = new HtmlTemplate(false);
+$htmlTemplate = new HtmlTemplate(__DIR__ . '/views');
 if ($secondsWorkedToday > 0) {
     $workday = new Workday(
         $configuration['workday_length_in_minutes'] * 60,
         $secondsWorkedToday
     );
 
-    $htmlTemplate->view('current_workday', [
+    $htmlTemplate->display('current_workday', [
         'formattedDate' => date('l jS'),
         'formattedCurrentFinishingTime' => $workday->getCurrentFinishingTime(),
         'formattedTimeWorked' => $workday->getTimeWorked(),
@@ -57,7 +57,7 @@ if ($secondsWorkedToday > 0) {
         'title' => 'When Do You Finish?',
     ]);
 } else {
-    $htmlTemplate->view('nothing_recorded', [
+    $htmlTemplate->display('nothing_recorded', [
         'title' => 'Nothing Recorded',
     ]);
 }

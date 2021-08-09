@@ -4,142 +4,103 @@ declare(strict_types=1);
 
 namespace SpeedyLom\WhenDoYouFinish\WebEngine;
 
+use Exception;
+
 final class HtmlTemplate
 {
-    private const INCLUDE_BLOCK_REGEX = '/(?<include_block>{% ?(?<view_type>extends|include) ?\'?(?<view_name>[a-zA-Z]*?)\'? ?%})/i';
-    private const EXTENDS_REGEX = '/{% ?(extends|include) ?\'?([a-zA-Z]*?)\'? ?%}/i';
-    private const CODE_BLOCK_REGEX = '/{% ?block ?(.*?) ?%}(.*?){% ?endblock ?%}/is';
-    private const YIELD_REGEX = '/{% ?yield ?(.*?) ?%}/i';
-    private mixed $blocks = [];
+    private const EXTEND_REGEX = '/{% ?extend ?(?<layout_name>\w+) ?%}/';
+    private const INSERT_REGEX = '/{% ?insert ?(?<tags>.*?) %}(?<content>.*?){% ?end ?%}/is';
 
     public function __construct(
-        private bool $cacheEnabled = true,
-        private string $viewPath = __DIR__ . '\..\..\views\\',
-        private string $cachePath = __DIR__ . '\..\..\cache\\',
+        private string $directory
     ) {
     }
 
-    public function view(string $viewName, mixed $data = []): void
-    {
-        if ($this->cacheEnabled && $this->canUseCachedView($viewName)) {
-            $this->extractDataAndRequireView($viewName, $data);
-            return;
+    /**
+     * @throws Exception
+     */
+    public function display(
+        string $templateName,
+        mixed $placeholderContent = []
+    ): void {
+        if (!$this->templateExists($templateName)) {
+            throw new Exception('template not found');
         }
 
-        $this->generateCacheFileForView($viewName, $this->getCachedViewPath($viewName));
-        $this->extractDataAndRequireView($viewName, $data);
-    }
+        $template = $this->fetchTemplateByName($templateName);
+        $template = $this->replacePlaceholdersWithContent(
+            $placeholderContent,
+            $template
+        );
 
-    public function clearCache(): void
-    {
-        foreach (glob($this->cachePath . '*') as $file) {
-            unlink($file);
-        }
-    }
-
-    private function canUseCachedView(string $viewName): bool
-    {
-        $cachedViewPath = $this->getCachedViewPath($viewName);
-
-        return ! file_exists($cachedViewPath) || filemtime($cachedViewPath) < filemtime($this->getViewFilePath($viewName));
-    }
-
-    private function getCachedViewPath(string $viewName): string
-    {
-        return $this->cachePath . $viewName . '.php';
-    }
-
-    private function getViewFilePath(string $viewName): string
-    {
-        return $this->viewPath . $viewName . '.html';
-    }
-
-    private function extractDataAndRequireView(string $viewName, mixed $data = []): void
-    {
-        extract($data, EXTR_SKIP);
-        require $this->getCachedViewPath($viewName);
-    }
-
-    private function generateCacheFileForView(string $viewName, string $cachedViewPath): void
-    {
-        $this->createCacheDirectory();
-
-        $viewSourceCode = $this->includeFiles($viewName);
-        $viewSourceCode = $this->compileCode($viewSourceCode);
-
-        $this->storeViewInCache($cachedViewPath, $viewSourceCode);
-    }
-
-    private function createCacheDirectory(): void
-    {
-        if (! file_exists($this->cachePath)) {
-            mkdir($this->cachePath, 0744);
-        }
-    }
-
-    private function includeFiles(string $viewName): string
-    {
-        $viewSourceCode = file_get_contents($this->getViewFilePath($viewName));
-
-        preg_match_all(self::INCLUDE_BLOCK_REGEX, $viewSourceCode, $includeBlocks, PREG_SET_ORDER);
-
-        foreach ($includeBlocks as $block) {
-            $viewSourceCode = str_replace($block['include_block'], $this->includeFiles($block['view_name']), $viewSourceCode);
+        $layoutName = $this->getLayoutNameFromTemplate($template) ?? null;
+        if ($this->templateExists($layoutName)) {
+            $template = $this->extendTemplateWithLayout($template, $layoutName);
         }
 
-        return preg_replace(self::EXTENDS_REGEX, '', $viewSourceCode);
+        echo $template;
     }
 
-    private function compileCode(string $code): string
-    {
-        $code = $this->compileBlock($code);
-        $code = $this->compileYield($code);
-        $code = $this->compileEchos($code);
-        return $this->compilePHP($code);
+    private function getLayoutNameFromTemplate(
+        string $template
+    ): ?string {
+        preg_match(self::EXTEND_REGEX, $template, $matches);
+
+        return $matches['layout_name'] ?? null;
     }
 
-    private function compileBlock(string $code): string
-    {
-        preg_match_all(self::CODE_BLOCK_REGEX, $code, $matches, PREG_SET_ORDER);
-
-        foreach ($matches as $value) {
-            if (! array_key_exists($value[1], $this->blocks)) {
-                $this->blocks[$value[1]] = '';
-            }
-
-            if (! str_contains($value[2], '@parent')) {
-                $this->blocks[$value[1]] = $value[2];
-            } else {
-                $this->blocks[$value[1]] = str_replace('@parent', $this->blocks[$value[1]], $value[2]);
-            }
-            $code = str_replace($value[0], '', $code);
+    private function replacePlaceholdersWithContent(
+        mixed $contentToInsert,
+        string $template
+    ): string {
+        foreach ($contentToInsert as $placeholder => $content) {
+            $template = str_replace(
+                '{{ ' . $placeholder . ' }}',
+                htmlspecialchars(strval($content)),
+                $template
+            );
         }
-        return $code;
+        return $template;
     }
 
-    private function compileYield(string $code): string
-    {
-        foreach ($this->blocks as $block => $value) {
-            $code = preg_replace('/{% ?yield ?' . $block . ' ?%}/', $value, $code);
+    private function getPathFromTemplateName(
+        ?string $templateName
+    ): string {
+        return $this->directory . DIRECTORY_SEPARATOR . $templateName . '.html';
+    }
+
+    private function fetchTemplateByName(
+        string $templateName
+    ): string|false {
+        return file_get_contents($this->getPathFromTemplateName($templateName));
+    }
+
+    private function templateExists(
+        ?string $templateName
+    ): bool {
+        return file_exists($this->getPathFromTemplateName($templateName));
+    }
+
+    private function extendTemplateWithLayout(
+        string $template,
+        string $layoutName
+    ): string {
+        $layout = $this->fetchTemplateByName($layoutName);
+        return $this->replaceTagsWithContent($template, $layout);
+    }
+
+    private function replaceTagsWithContent(
+        string $template,
+        string $layout
+    ): string {
+        preg_match_all(self::INSERT_REGEX, $template, $matches);
+        foreach ($matches['tags'] as $index => $tag) {
+            $layout = str_replace(
+                '{% tag ' . $tag . ' %}',
+                strval($matches['content'][$index]),
+                $layout
+            );
         }
-
-        return preg_replace(self::YIELD_REGEX, '', $code);
-    }
-
-    private function compileEchos(string $code): string
-    {
-        return preg_replace('~\{{\s*(.+?)\s*\}}~is', '<?=$1?>', $code);
-    }
-
-    private function compilePHP(string $code): string
-    {
-        return preg_replace('~\{%\s*(.+?)\s*\%}~is', '<?=$1?>', $code);
-    }
-
-    private function storeViewInCache(string $cachedViewPath, string $viewSourceCode): void
-    {
-        $cacheFileHeader = '<?php declare(strict_types=1); class_exists(\'' . self::class . '\') or exit; ?>' . PHP_EOL;
-
-        file_put_contents($cachedViewPath, $cacheFileHeader . $viewSourceCode);
+        return $layout;
     }
 }

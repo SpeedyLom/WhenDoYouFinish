@@ -4,68 +4,83 @@ declare(strict_types=1);
 
 namespace SpeedyLom\WhenDoYouFinish;
 
-use DateTime;
-use DateTimeZone;
-
 final class Workday
 {
     private int $dayLengthInSeconds;
     private int $timeWorkedInSeconds;
+    private int $timeWorkedInMinutes;
 
-    public function __construct(int $dayLengthInSeconds, int $timeWorkedInSeconds)
-    {
+    public function __construct(
+        int $dayLengthInSeconds,
+        int $timeWorkedInSeconds
+    ) {
         $this->dayLengthInSeconds = max(1, $dayLengthInSeconds);
         $this->timeWorkedInSeconds = max(0, $timeWorkedInSeconds);
+        $this->timeWorkedInMinutes = intval($this->timeWorkedInSeconds / 60);
     }
 
     public function getPercentageWorked(): int
     {
-        return intval(min(100, round($this->timeWorkedInSeconds * 100
-                                     / $this->dayLengthInSeconds, 2)));
+        return intval(
+            min(
+                100,
+                round(
+                    $this->timeWorkedInSeconds * 100
+                    / $this->dayLengthInSeconds
+                )
+            )
+        );
     }
 
     public function getTimeWorked(): string
     {
-        try {
-            $date = new DateTime(
-                '@' . $this->timeWorkedInSeconds,
-                new DateTimeZone('UTC')
-            );
-        } catch (\Exception $e) {
-            return date(
-                $this->getTimeWorkedFormat(),
-                $this->timeWorkedInSeconds
-            );
+        if ($this->timeWorkedInMinutes > 60) {
+            return $this->formatTimeWorkedIntoHoursAndMinutes();
         }
 
-        return $date->format($this->getTimeWorkedFormat());
+        return $this->formatTimeWorkedIntoMinutes();
     }
 
-    public function getCurrentFinishingTime(?int $timestamp = null): string
+    private function formatTimeWorkedIntoHoursAndMinutes(): string
     {
+        $hours = floor($this->timeWorkedInMinutes / 60);
+        $minutes = $this->timeWorkedInMinutes % 60;
+
+        if ($hours > 1) {
+            return sprintf('%2$d hours and %1$d minutes', $minutes, $hours);
+        }
+
+        return sprintf('%2$d hour and %1$d minutes', $minutes, $hours);
+    }
+
+    private function formatTimeWorkedIntoMinutes(): string
+    {
+        return sprintf('%1$d minutes', $this->timeWorkedInMinutes);
+    }
+
+    public function getCurrentFinishingTime(
+        ?int $timestamp = null
+    ): string {
         return date('g.ia', $this->currentFinishingTime($timestamp));
     }
 
-    private function secondsLeftToWork(): int
-    {
-        return intval(max(0, $this->dayLengthInSeconds
-                           - $this->timeWorkedInSeconds));
-    }
-
-    private function currentFinishingTime(?int $timestamp = null): int
-    {
+    private function currentFinishingTime(
+        ?int $timestamp = null
+    ): int {
         return strtotime(
-            '+' . $this->secondsLeftToWork() . ' seconds',
+            $this->secondsLeftToWork() . ' seconds',
             $timestamp
         );
     }
 
-    private function getTimeWorkedFormat(): string
+    private function secondsLeftToWork(): int
     {
-        if ($this->timeWorkedInSeconds >= 3600) {
-            return 'g \h\o\u\r\s \a\n\d i \m\i\n\u\t\e\s';
-        }
-
-        return 'i \m\i\n\u\t\e\s';
+        return intval(
+            max(
+                0,
+                $this->dayLengthInSeconds
+                - $this->timeWorkedInSeconds
+            )
+        );
     }
 }
