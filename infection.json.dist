@@ -1,0 +1,16 @@
+{
+    "source": {
+        "directories": [
+            "src\/"
+        ]
+    },
+    "logs": {
+        "text": "log\/infection.log",
+        "summary": "log\/summary.log",
+        "json": "log\/infection-log.json",
+        "perMutator": "log\/per-mutator.md"
+    },
+    "mutators": {
+        "@default": true
+    }
+}

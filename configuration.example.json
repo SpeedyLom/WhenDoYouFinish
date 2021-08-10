@@ -1,0 +1,7 @@
+{
+  "api_token": "123456789ABCDEFG123456789ABCDEFG",
+  "environment": "dev",
+  "user_agent": "your_username@example.com",
+  "workday_length_in_minutes": 450,
+  "workspace_id": 1234567
+}
