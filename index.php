@@ -7,25 +7,27 @@ use SpeedyLom\WhenDoYouFinish\Toggl;
 use SpeedyLom\WhenDoYouFinish\Toggl\TrackApi;
 use SpeedyLom\WhenDoYouFinish\WebEngine\HtmlTemplate;
 use SpeedyLom\WhenDoYouFinish\Workday;
-use Whoops\Handler\PrettyPageHandler;
-use Whoops\Run;
 
 require_once __DIR__ . '/vendor/autoload.php';
-
-$whoops = new Run();
-$whoops->pushHandler(new PrettyPageHandler());
-$whoops->register();
 
 $configuration = json_decode(
     file_get_contents('configuration.json'),
     true
 );
 
+if (isset($configuration['environment']) && $configuration['environment'] === 'dev') {
+    $whoops = new Whoops\Run();
+    $whoops->pushHandler(new Whoops\Handler\PrettyPageHandler());
+    $whoops->register();
+}
+
 $togglReportsApi = new Toggl\ReportsApi(
-    new CurlBasicAuthentication(Toggl\ReportsApi::buildWeeklyFiguresUrl(
-        $configuration['user_agent'],
-        $configuration['workspace_id']
-    )),
+    new CurlBasicAuthentication(
+        Toggl\ReportsApi::buildWeeklyFiguresUrl(
+            $configuration['user_agent'],
+            $configuration['workspace_id']
+        )
+    ),
     $configuration['api_token']
 );
 $togglReportsApi->requestWeeklyFigures();
