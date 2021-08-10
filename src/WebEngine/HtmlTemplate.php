@@ -9,7 +9,8 @@ use Exception;
 final class HtmlTemplate
 {
     private const EXTEND_REGEX = '/{% ?extend ?(?<layout_name>\w+) ?%}/';
-    private const INSERT_REGEX = '/{% ?insert ?(?<tags>.*?) %}(?<content>.*?){% ?end ?%}/is';
+    private const INSERT_REGEX =
+        '/{% ?insert ?(?<tags>.*?) %}(?<content>.*?){% ?end ?%}/is';
 
     public function __construct(
         private string $directory

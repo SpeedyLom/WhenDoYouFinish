@@ -51,8 +51,8 @@ return [
     */
 
     'exclude' => [
-        //  'path/to/directory-or-file'
-        'cache',
+        'index.php',
+        'phpinsights.php',
     ],
 
     'add' => [
@@ -62,13 +62,12 @@ return [
     ],
 
     'remove' => [
-        //  ExampleInsight::class,
+        \PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\SpaceAfterNotSniff::class,
+        \PhpCsFixer\Fixer\Operator\BinaryOperatorSpacesFixer::class,
     ],
 
     'config' => [
-        //  ExampleInsight::class => [
-        //      'key' => 'value',
-        //  ],
+
     ],
 
     /*
@@ -83,10 +82,10 @@ return [
     */
 
     'requirements' => [
-//        'min-quality' => 0,
-//        'min-complexity' => 0,
-//        'min-architecture' => 0,
-//        'min-style' => 0,
+        'min-quality' => 100,
+        'min-complexity' => 85,
+        'min-architecture' => 100,
+        'min-style' => 95,
 //        'disable-security-check' => false,
     ],
 

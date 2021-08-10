@@ -33,5 +33,15 @@
     "infection/infection": "^0.23.0",
     "nunomaduro/phpinsights": "^2.0",
     "mikey179/vfsstream": "^1.6"
+  },
+  "scripts": {
+    "check": [
+      "@test",
+      "@standards",
+      "@analysis"
+    ],
+    "test": "vendor/bin/phpunit",
+    "standards": "vendor/bin/phpcs -n --standard=psr12 src tests",
+    "analysis": "vendor/bin/phpinsights -n --ansi --format=github-action"
   }
 }

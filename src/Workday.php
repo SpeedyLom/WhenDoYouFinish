@@ -41,6 +41,12 @@ final class Workday
         return $this->formatTimeWorkedIntoMinutes();
     }
 
+    public function getCurrentFinishingTime(
+        ?int $timestamp = null
+    ): string {
+        return date('g.ia', $this->currentFinishingTime($timestamp));
+    }
+
     private function formatTimeWorkedIntoHoursAndMinutes(): string
     {
         $hours = floor($this->timeWorkedInMinutes / 60);
@@ -56,12 +62,6 @@ final class Workday
     private function formatTimeWorkedIntoMinutes(): string
     {
         return sprintf('%1$d minutes', $this->timeWorkedInMinutes);
-    }
-
-    public function getCurrentFinishingTime(
-        ?int $timestamp = null
-    ): string {
-        return date('g.ia', $this->currentFinishingTime($timestamp));
     }
 
     private function currentFinishingTime(
