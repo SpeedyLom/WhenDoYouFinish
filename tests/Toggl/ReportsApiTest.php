@@ -128,7 +128,7 @@ class ReportsApiTest extends TestCase
     {
         $url = ReportsApi::buildWeeklyFiguresUrl('user_agent', 1234567);
         $this->assertSame(
-            'https://toggl.com/reports/api/v2/weekly?user_agent=user_agent&workspace_id=1234567',
+            'https://api.track.toggl.com/reports/api/v2/weekly?user_agent=user_agent&workspace_id=1234567',
             $url
         );
     }

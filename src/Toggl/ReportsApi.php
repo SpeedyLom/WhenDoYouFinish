@@ -8,7 +8,7 @@ use SpeedyLom\WhenDoYouFinish\HttpRequest\BasicAuthentication;
 
 final class ReportsApi
 {
-    public const BASE_URL = 'https://toggl.com/reports/api/v2/';
+    public const BASE_URL = 'https://api.track.toggl.com/reports/api/v2/';
 
     private mixed $weeklyFigures = [];
 
