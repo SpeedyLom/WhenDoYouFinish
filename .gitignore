@@ -9,4 +9,4 @@ composer.phar
 /.env
 /.idea/
 /.phpunit.result.cache
-/.configuration.json
+/configuration.json
