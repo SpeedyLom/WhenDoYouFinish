@@ -44,22 +44,31 @@ $togglTrackApi->requestCurrentEntry();
 
 $secondsWorkedToday += $togglTrackApi->getElapsedSecondsForCurrentEntry(time());
 
-$htmlTemplate = new HtmlTemplate(__DIR__ . '/views');
+$mustache = new Mustache_Engine(
+    ['loader' => new Mustache_Loader_FilesystemLoader(__DIR__ . '/views'),]
+);
+
 if ($secondsWorkedToday > 0) {
     $workday = new Workday(
         $configuration['workday_length_in_minutes'] * 60,
         $secondsWorkedToday
     );
 
-    $htmlTemplate->display('current_workday', [
-        'formattedDate' => date('l jS'),
-        'formattedCurrentFinishingTime' => $workday->getCurrentFinishingTime(),
-        'formattedTimeWorked' => $workday->getTimeWorked(),
-        'percentageWorked' => $workday->getPercentageWorked(),
-        'title' => 'When Do You Finish?',
-    ]);
+    echo $mustache->render(
+        'current_workday',
+        [
+            'formattedDate' => date('l jS'),
+            'formattedCurrentFinishingTime' => $workday->getCurrentFinishingTime(),
+            'formattedTimeWorked' => $workday->getTimeWorked(),
+            'percentageWorked' => $workday->getPercentageWorked(),
+            'title' => 'When Do You Finish?',
+        ]
+    );
 } else {
-    $htmlTemplate->display('nothing_recorded', [
-        'title' => 'Nothing Recorded',
-    ]);
+    echo $mustache->render(
+        'nothing_recorded',
+        [
+            'title' => 'Nothing Recorded',
+        ]
+    );
 }

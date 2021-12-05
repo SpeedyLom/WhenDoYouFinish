@@ -12,7 +12,8 @@
   "require": {
     "php": "^8.0",
     "ext-curl": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "mustache/mustache": "~2.5"
   },
   "autoload": {
     "psr-4": {

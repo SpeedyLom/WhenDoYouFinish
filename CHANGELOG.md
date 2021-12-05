@@ -7,6 +7,18 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Mustache
+
+### Changed
+
+- Templates to use Mustache
+
+### Removed
+
+- HtmlTemplate
+
 ## [1.1.0] - 2021-12-04
 
 ### Added

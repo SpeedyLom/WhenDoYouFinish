@@ -1,8 +1,5 @@
-{% extend layout %}
+{{> header}}
 
-{% insert title %}{{ title }}{% end %}
-
-{% insert content %}
 <div class="card mb-4 shadow-sm">
     <div class="card-header"><h4 class="my-0 fw-normal">{{ formattedDate }}</h4></div>
     <div class="card-body">
@@ -16,4 +13,5 @@
         </div>
     </div>
 </div>
-{% end %}
+
+{{> footer}}
