@@ -5,7 +5,6 @@ declare(strict_types=1);
 use SpeedyLom\WhenDoYouFinish\HttpRequest\CurlBasicAuthentication;
 use SpeedyLom\WhenDoYouFinish\Toggl;
 use SpeedyLom\WhenDoYouFinish\Toggl\TrackApi;
-use SpeedyLom\WhenDoYouFinish\WebEngine\HtmlTemplate;
 use SpeedyLom\WhenDoYouFinish\Workday;
 
 require_once __DIR__ . '/vendor/autoload.php';
